@@ -1,0 +1,53 @@
+//this is axios .js file
+
+import axios from '../../Axiosinstance';
+import { useParams } from 'react-router-dom';
+
+const App = () => {
+  const [rows, setRows] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState({ name: '', description: '', module: '', file: '' });
+  const [modules, setModules] = useState([]);  // To store module details
+  const { id } = useParams();
+
+//this is api axios using  
+  useEffect(() => {
+    // Fetch module data from API using axios
+    axios.get(`batch/${id}`) // Use backticks for template literals
+      .then((response) => {
+        console.log('API Response:', response); // The response will contain the data directly
+        setModules(response.data.moduleDetails || []); // Use moduleDetails field from the response
+      })
+      .catch((error) => {
+        console.error('Error fetching modules:', error);
+      });
+  }, [id]); 
+
+//this data show
+ <TextField
+            label="Description"
+            value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            fullWidth
+            multiline
+            rows={3}
+            variant="outlined"
+          />
+             <TextField
+  select
+  label="Module"
+  value={formData.module} // This should match the module id or module name you're working with
+  onChange={(e) => setFormData({ ...formData, module: e.target.value })}
+  fullWidth
+  variant="outlined"
+>
+  {modules.length > 0 ? (
+    modules.map((module) => (
+      <MenuItem key={module.id} value={module.id}> {/* This value should match what's used in formData.module */}
+        {module.moduleName} {/* Display moduleName */}
+      </MenuItem>
+    ))
+  ) : (
+    <MenuItem value="">Loading...</MenuItem>
+  )}
+</TextField>
